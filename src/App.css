@@ -139,13 +139,38 @@ html, body, #root { height: 100%; width: 100%; }
   max-width: 380px;
 }
 
-.start-squirrel {
-  width: 220px;
-  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
+/* ── Start scene: Nutty collecting walnuts ── */
+.start-scene {
+  position: relative;
+  width: 260px;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
-/* Make the image bigger on the start screen */
-.start-squirrel .squirrel-img {
-  width: 220px;
+
+.start-nutty {
+  position: relative;
+  z-index: 2;
+}
+.start-nutty .squirrel-img { width: 180px; }
+
+/* Ground walnuts sitting in a row below Nutty */
+.ground-walnuts {
+  display: flex;
+  gap: 14px;
+  padding: 4px 0 0;
+  z-index: 1;
+}
+.ground-walnut {
+  font-size: 1.6rem;
+  transition: transform 0.3s, opacity 0.3s;
+  display: inline-block;
+}
+.ground-walnut.collected {
+  transform: translateY(-60px) scale(1.4);
+  opacity: 0;
 }
 
 .choose-level-btn {
@@ -282,13 +307,7 @@ html, body, #root { height: 100%; width: 100%; }
 }
 .preview-text { font-weight: 700; color: #3D1A00; font-size: 0.95rem; }
 
-.deco-walnuts { position: absolute; width: 100%; height: 100%; pointer-events: none; top: 0; left: 0; }
-.deco-walnut { position: absolute; font-size: 2rem; animation: float-walnut 5s ease-in-out infinite; opacity: 0.7; }
-.deco-walnut-0 { top: 10%; left:  8%; animation-delay: 0s; }
-.deco-walnut-1 { top: 20%; right: 6%; animation-delay: 0.8s; }
-.deco-walnut-2 { bottom: 18%; left: 5%; animation-delay: 1.6s; }
-.deco-walnut-3 { bottom: 12%; right: 8%; animation-delay: 0.4s; }
-.deco-walnut-4 { top: 50%; right: 3%; animation-delay: 2s; }
+/* deco-walnuts removed — replaced by start-scene collecting animation */
 
 @keyframes float-walnut {
   0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -1239,7 +1258,50 @@ html, body, #root { height: 100%; width: 100%; }
   to   { transform: scale(1)   translateY(0);    opacity: 1; }
 }
 
-.levelup-squirrel { width: 160px; }
+/* ── Level-up celebration scene ── */
+.levelup-scene {
+  position: relative;
+  width: 240px;
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.levelup-nutty {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -8px; /* sit Nutty into the pile */
+}
+.levelup-nutty .squirrel-img { width: 160px; }
+
+/* Walnut pile: walnuts arc in a semicircle below Nutty */
+.walnut-pile {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 70px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  z-index: 1;
+}
+
+.pile-walnut {
+  font-size: 1.8rem;
+  display: inline-block;
+  animation: pile-bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pile-bounce-in {
+  0%   { transform: scale(0) translateY(30px) rotate(-30deg); opacity: 0; }
+  70%  { transform: scale(1.2) translateY(-6px) rotate(5deg);  opacity: 1; }
+  100% { transform: scale(1)   translateY(0)   rotate(0deg);  opacity: 1; }
+}
 
 .levelup-title {
   font-size: clamp(1.6rem, 5vw, 2.2rem);
