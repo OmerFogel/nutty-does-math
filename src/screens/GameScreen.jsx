@@ -1,25 +1,48 @@
 import { useState, useRef, useEffect } from 'react';
 import { t } from '../i18n';
-import Squirrel from '../components/Squirrel';
+import ForestScene from '../components/ForestScene';
+import CountingHelper from '../components/CountingHelper';
 
 export default function GameScreen({
-  lang, level, levelName, levelIntro, score,
+  lang, level, levelName, score,
   walnutsThisLevel, walnutsNeeded,
   problem, squirrelState, feedback, particles,
   onAnswer, onToggleLang,
 }) {
   const [input, setInput] = useState('');
+  const [showCounting, setShowCounting] = useState(false);
+  const [wrongCount, setWrongCount] = useState(0);
   const inputRef = useRef(null);
   const isLocked = squirrelState === 'happy' || squirrelState === 'celebrating';
 
+  // Reset wrong count and input when problem changes
   useEffect(() => {
     setInput('');
+    setWrongCount(0);
+    setShowCounting(false);
     if (!isLocked) inputRef.current?.focus();
-  }, [problem, isLocked]);
+  }, [problem]);
+
+  // Focus input when unlocked
+  useEffect(() => {
+    if (!isLocked) inputRef.current?.focus();
+  }, [isLocked]);
+
+  // Auto-show counting helper after 2 wrong answers
+  useEffect(() => {
+    if (wrongCount >= 2) {
+      setShowCounting(true);
+    }
+  }, [wrongCount]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (input === '' || isLocked) return;
+
+    const isCorrect = parseInt(input, 10) === problem?.answer;
+    if (!isCorrect) {
+      setWrongCount(c => c + 1);
+    }
     onAnswer(input);
     setInput('');
   };
@@ -29,17 +52,13 @@ export default function GameScreen({
   };
 
   const handleChange = (e) => {
-    // Allow digits only (and optional leading minus won't happen since answers ≥ 0)
     setInput(e.target.value.replace(/[^0-9]/g, ''));
   };
 
+  const progress = walnutsNeeded > 0 ? walnutsThisLevel / walnutsNeeded : 0;
+
   return (
     <div className="game-screen">
-      {/* Clouds */}
-      <div className="cloud cloud-1" />
-      <div className="cloud cloud-2" />
-      <div className="cloud cloud-3" />
-
       {/* Header */}
       <header className="game-header">
         <div className="header-info">
@@ -52,40 +71,27 @@ export default function GameScreen({
         </button>
       </header>
 
-      {/* Main game area */}
-      <main className="game-main">
-        {/* Squirrel + speech bubble */}
-        <div className="character-area">
-          {problem && (
-            <div className="speech-bubble">
-              <div className="problem-display">
-                <span className="prob-num">{problem.a}</span>
-                <span className="prob-op">{problem.op}</span>
-                <span className="prob-num">{problem.b}</span>
-                <span className="prob-eq">=</span>
-                <span className="prob-blank">?</span>
-              </div>
-            </div>
-          )}
+      {/* Forest Scene — Nutty walks here */}
+      <ForestScene
+        progress={progress}
+        walnutsNeeded={walnutsNeeded}
+        squirrelState={squirrelState}
+        problem={problem}
+        feedback={feedback}
+        particles={particles}
+        lang={lang}
+      />
 
-          <div className="squirrel-container">
-            <Squirrel state={squirrelState} />
-
-            {/* Floating particles */}
-            {particles.map(p => (
-              <span key={p.id} className="particle">🌰</span>
-            ))}
+      {/* Controls area */}
+      <div className="controls-area">
+        {/* Feedback message */}
+        {feedback && (
+          <div className={`feedback-msg feedback-${feedback.type}`}>
+            {feedback.msg}
           </div>
+        )}
 
-          {/* Feedback */}
-          {feedback && (
-            <div className={`feedback-msg feedback-${feedback.type}`}>
-              {feedback.msg}
-            </div>
-          )}
-        </div>
-
-        {/* Answer input */}
+        {/* Answer form */}
         <form className="answer-form" onSubmit={handleSubmit}>
           <input
             ref={inputRef}
@@ -100,7 +106,6 @@ export default function GameScreen({
             disabled={isLocked}
             min="0"
             max="9999"
-            autoFocus
           />
           <button
             type="submit"
@@ -111,7 +116,17 @@ export default function GameScreen({
           </button>
         </form>
 
-        {/* Walnut progress */}
+        {/* Count with Nutty button */}
+        <button
+          className="count-btn"
+          onClick={() => setShowCounting(true)}
+          disabled={!problem}
+          aria-label="Open counting helper"
+        >
+          {lang === 'he' ? '🌰 ספור עם אגוז!' : '🌰 Count with Nutty!'}
+        </button>
+
+        {/* Walnut progress dots */}
         <div className="walnut-progress">
           <div className="walnut-track">
             {Array.from({ length: walnutsNeeded }).map((_, i) => (
@@ -127,7 +142,25 @@ export default function GameScreen({
             {walnutsThisLevel}/{walnutsNeeded} {t(lang, 'walnuts')}
           </div>
         </div>
-      </main>
+      </div>
+
+      {/* Floating walnut particles */}
+      {particles.map(p => (
+        <span key={p.id} className="particle">🌰</span>
+      ))}
+
+      {/* Counting Helper overlay */}
+      {showCounting && problem && (
+        <div className="counting-overlay-backdrop" onClick={() => setShowCounting(false)}>
+          <div onClick={e => e.stopPropagation()}>
+            <CountingHelper
+              problem={problem}
+              lang={lang}
+              onClose={() => setShowCounting(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

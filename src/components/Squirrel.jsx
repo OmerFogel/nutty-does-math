@@ -5,109 +5,155 @@ export default function Squirrel({ state = 'idle' }) {
   return (
     <div className={`squirrel-wrapper squirrel-${state}`}>
       <svg
-        viewBox="0 0 200 250"
+        viewBox="0 0 200 260"
         xmlns="http://www.w3.org/2000/svg"
         className="squirrel-svg"
         aria-label="Nutty the squirrel"
       >
-        {/* ── TAIL (behind everything) ── */}
-        {/* Outer tail */}
+        {/* ── TAIL (behind everything, on LEFT side) ── */}
+        {/* Dark outer tail layer */}
         <path
-          d="M 125 205 C 160 195 195 165 198 120 C 201 75 185 40 158 32
-             C 140 26 128 42 132 68 C 136 90 148 108 138 138
-             C 132 158 120 178 118 200"
-          fill="#7B3A10"
+          d="M 85 220 C 80 200 70 180 55 155 C 35 125 15 100 18 68
+             C 21 40 38 20 58 18 C 75 17 88 30 90 50
+             C 92 68 82 85 78 110 C 74 135 80 170 88 210"
+          fill="#A84810"
         />
-        {/* Middle fluff */}
+        {/* Main orange tail layer */}
         <path
-          d="M 120 202 C 155 190 188 160 190 115 C 192 72 177 40 152 34
-             C 136 28 124 44 128 69 C 132 90 143 108 133 136
-             C 127 155 116 175 114 198"
-          fill="#A0522D"
+          d="M 83 218 C 78 198 68 178 53 153 C 34 123 17 98 20 67
+             C 23 40 39 22 58 20 C 74 19 86 32 88 51
+             C 90 69 80 86 76 110 C 72 134 78 168 86 208"
+          fill="#D4601A"
         />
-        {/* Inner light fluff */}
+        {/* Lighter inner tail */}
         <path
-          d="M 116 200 C 148 186 180 155 182 110 C 184 68 170 40 146 36
-             C 132 30 121 47 125 71 C 129 91 139 108 129 134
-             C 123 153 112 173 110 196"
-          fill="#CD853F"
+          d="M 80 215 C 75 195 65 175 51 151 C 33 122 19 97 22 67
+             C 25 42 40 25 57 23 C 72 22 83 34 85 53
+             C 87 70 78 87 74 110 C 70 133 76 166 84 205"
+          fill="#E8803E"
+        />
+        {/* Lightest highlight on tail */}
+        <path
+          d="M 76 210 C 71 191 62 172 49 149 C 33 121 22 97 25 68
+             C 28 44 42 28 57 26 C 70 25 80 37 82 55
+             C 84 71 75 88 72 110 C 68 132 73 163 81 202"
+          fill="#F0A060"
+          opacity="0.7"
         />
 
         {/* ── BODY ── */}
-        <ellipse cx="88" cy="178" rx="42" ry="52" fill="#8B4513" />
-        {/* Belly */}
-        <ellipse cx="88" cy="186" rx="24" ry="33" fill="#DEB887" />
+        <ellipse cx="118" cy="185" rx="38" ry="50" fill="#D4601A" />
+        {/* Belly overlay - cream colored */}
+        <ellipse cx="118" cy="192" rx="22" ry="32" fill="#F5D5A0" />
 
         {/* ── HEAD ── */}
-        <circle cx="88" cy="103" r="46" fill="#8B4513" />
+        <circle cx="118" cy="108" r="44" fill="#D4601A" />
+
+        {/* ── MUZZLE AREA (lighter oval below nose) ── */}
+        <ellipse cx="118" cy="128" rx="22" ry="16" fill="#E8803E" opacity="0.7" />
+        <ellipse cx="118" cy="130" rx="18" ry="13" fill="#F5D5A0" opacity="0.8" />
 
         {/* ── EARS ── */}
-        <ellipse cx="56" cy="66" rx="16" ry="21" fill="#8B4513" transform="rotate(-18 56 66)" />
-        <ellipse cx="56" cy="66" rx="9" ry="13" fill="#F4A0A0" transform="rotate(-18 56 66)" />
-        <ellipse cx="120" cy="66" rx="16" ry="21" fill="#8B4513" transform="rotate(18 120 66)" />
-        <ellipse cx="120" cy="66" rx="9" ry="13" fill="#F4A0A0" transform="rotate(18 120 66)" />
+        {/* Left ear */}
+        <polygon points="82,78 72,42 96,55" fill="#A84810" />
+        <polygon points="83,74 75,48 94,58" fill="#D4601A" />
+        <polygon points="84,71 77,52 92,61" fill="#FFB3C1" />
+        {/* Right ear */}
+        <polygon points="148,78 158,42 136,55" fill="#A84810" />
+        <polygon points="147,74 155,48 138,58" fill="#D4601A" />
+        <polygon points="146,71 153,52 140,61" fill="#FFB3C1" />
 
-        {/* ── EYES (whites) ── */}
-        <circle cx="73" cy="100" r="14" fill="white" />
-        <circle cx="103" cy="100" r="14" fill="white" />
+        {/* ── EYES ── */}
+        {/* Eye whites */}
+        <circle cx="102" cy="105" r="15" fill="white" />
+        <circle cx="134" cy="105" r="15" fill="white" />
 
-        {/* ── EYES (expression-dependent) ── */}
+        {/* Expression-dependent eyes */}
         {isHappy ? (
           <>
-            {/* Happy shut eyes — arc shapes */}
-            <path d="M 61 98 Q 73 88 85 98" stroke="#3D1A00" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-            <path d="M 91 98 Q 103 88 115 98" stroke="#3D1A00" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-            {/* Sparkle stars */}
-            <text x="58" y="88" fontSize="12" textAnchor="middle">✨</text>
-            <text x="108" y="88" fontSize="12" textAnchor="middle">✨</text>
+            {/* Happy curved closed eyes */}
+            <path d="M 89 104 Q 102 93 115 104" stroke="#3D1A00" strokeWidth="4" fill="none" strokeLinecap="round" />
+            <path d="M 121 104 Q 134 93 147 104" stroke="#3D1A00" strokeWidth="4" fill="none" strokeLinecap="round" />
+            {/* Sparkle stars above */}
+            <text x="94" y="90" fontSize="14" textAnchor="middle">✨</text>
+            <text x="142" y="90" fontSize="14" textAnchor="middle">✨</text>
+            {/* Blush cheeks for happy */}
+            <circle cx="86" cy="118" r="13" fill="#FF9999" opacity="0.5" />
+            <circle cx="150" cy="118" r="13" fill="#FF9999" opacity="0.5" />
           </>
         ) : isWrong ? (
           <>
-            {/* Worried eyes — pupils look up */}
-            <circle cx="73" cy="97" r="10" fill="#3D1A00" />
-            <circle cx="103" cy="97" r="10" fill="#3D1A00" />
-            <circle cx="75" cy="94" r="3" fill="white" />
-            <circle cx="105" cy="94" r="3" fill="white" />
-            {/* Worried brows */}
-            <path d="M 62 87 Q 73 93 84 87" stroke="#3D1A00" strokeWidth="3" fill="none" strokeLinecap="round" />
-            <path d="M 92 87 Q 103 93 114 87" stroke="#3D1A00" strokeWidth="3" fill="none" strokeLinecap="round" />
+            {/* Sad worried pupils looking up */}
+            <circle cx="102" cy="102" r="11" fill="#3D1A00" />
+            <circle cx="134" cy="102" r="11" fill="#3D1A00" />
+            {/* White highlights */}
+            <circle cx="106" cy="98" r="4" fill="white" />
+            <circle cx="138" cy="98" r="4" fill="white" />
+            {/* Worried brows - angled inward and down */}
+            <path d="M 90 91 Q 102 97 114 91" stroke="#3D1A00" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            <path d="M 122 91 Q 134 97 146 91" stroke="#3D1A00" strokeWidth="3.5" fill="none" strokeLinecap="round" />
           </>
         ) : (
           <>
-            {/* Normal eyes */}
-            <circle cx="75" cy="101" r="10" fill="#3D1A00" />
-            <circle cx="105" cy="101" r="10" fill="#3D1A00" />
-            <circle cx="77" cy="98" r="3" fill="white" />
-            <circle cx="107" cy="98" r="3" fill="white" />
+            {/* Normal eyes with large highlights */}
+            <circle cx="104" cy="106" r="11" fill="#3D1A00" />
+            <circle cx="136" cy="106" r="11" fill="#3D1A00" />
+            {/* Large white highlight top-right of pupils */}
+            <circle cx="109" cy="101" r="5" fill="white" />
+            <circle cx="141" cy="101" r="5" fill="white" />
+            {/* Small secondary highlight */}
+            <circle cx="107" cy="109" r="2" fill="white" opacity="0.6" />
+            <circle cx="139" cy="109" r="2" fill="white" opacity="0.6" />
           </>
         )}
 
         {/* ── NOSE ── */}
-        <ellipse cx="88" cy="118" rx="5.5" ry="4.5" fill="#FF8099" />
+        {/* Dark outer nose */}
+        <ellipse cx="118" cy="122" rx="7" ry="5.5" fill="#C04060" />
+        {/* Lighter inner nose */}
+        <ellipse cx="118" cy="121" rx="5" ry="4" fill="#FF6B8A" />
+        {/* Nose highlight */}
+        <ellipse cx="116" cy="120" rx="2" ry="1.5" fill="white" opacity="0.5" />
 
         {/* ── MOUTH ── */}
         {isHappy ? (
-          <path d="M 76 124 Q 88 136 100 124" stroke="#3D1A00" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <>
+            <path d="M 106 130 Q 118 144 130 130" stroke="#3D1A00" strokeWidth="3" fill="none" strokeLinecap="round" />
+            <path d="M 106 130 Q 106 136 112 133" stroke="#3D1A00" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path d="M 130 130 Q 130 136 124 133" stroke="#3D1A00" strokeWidth="2" fill="none" strokeLinecap="round" />
+          </>
         ) : isWrong ? (
-          <path d="M 76 130 Q 88 122 100 130" stroke="#3D1A00" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path d="M 107 136 Q 118 128 129 136" stroke="#3D1A00" strokeWidth="3" fill="none" strokeLinecap="round" />
         ) : (
-          <path d="M 78 124 Q 88 132 98 124" stroke="#3D1A00" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M 108 130 Q 118 140 128 130" stroke="#3D1A00" strokeWidth="2.5" fill="none" strokeLinecap="round" />
         )}
 
-        {/* ── CHEEKS ── */}
-        <circle cx="60" cy="113" r="12" fill="#FFB6A3" opacity="0.45" />
-        <circle cx="116" cy="113" r="12" fill="#FFB6A3" opacity="0.45" />
+        {/* ── CHEEK BLUSH SPOTS ── */}
+        <circle cx="86" cy="117" r="12" fill="#FFB3A0" opacity="0.4" />
+        <circle cx="150" cy="117" r="12" fill="#FFB3A0" opacity="0.4" />
 
         {/* ── ARMS ── */}
-        <ellipse cx="50" cy="168" rx="13" ry="26" fill="#8B4513" transform="rotate(-22 50 168)" />
-        <ellipse cx="126" cy="168" rx="13" ry="26" fill="#8B4513" transform="rotate(22 126 168)" />
+        {/* Left arm */}
+        <ellipse cx="84" cy="178" rx="12" ry="24" fill="#A84810" transform="rotate(-20 84 178)" />
+        <ellipse cx="84" cy="178" rx="9" ry="20" fill="#D4601A" transform="rotate(-20 84 178)" />
+        {/* Right arm */}
+        <ellipse cx="152" cy="178" rx="12" ry="24" fill="#A84810" transform="rotate(20 152 178)" />
+        <ellipse cx="152" cy="178" rx="9" ry="20" fill="#D4601A" transform="rotate(20 152 178)" />
 
-        {/* ── WALNUT in paws ── */}
-        <ellipse cx="88" cy="218" rx="20" ry="16" fill="#7A5C10" />
-        <ellipse cx="88" cy="215" rx="18" ry="14" fill="#A08030" />
-        <path d="M 71 215 Q 88 205 105 215" stroke="#6B4F10" strokeWidth="1.5" fill="none" />
-        <path d="M 69 219 Q 88 228 107 219" stroke="#6B4F10" strokeWidth="1.5" fill="none" />
-        <line x1="88" y1="203" x2="88" y2="228" stroke="#6B4F10" strokeWidth="1.5" />
+        {/* ── LEGS AND FEET ── */}
+        {/* Left leg */}
+        <ellipse cx="105" cy="233" rx="14" ry="18" fill="#A84810" />
+        <ellipse cx="105" cy="233" rx="11" ry="15" fill="#D4601A" />
+        {/* Left foot */}
+        <ellipse cx="100" cy="247" rx="16" ry="9" fill="#A84810" />
+        <ellipse cx="100" cy="246" rx="13" ry="7" fill="#D4601A" />
+
+        {/* Right leg */}
+        <ellipse cx="131" cy="233" rx="14" ry="18" fill="#A84810" />
+        <ellipse cx="131" cy="233" rx="11" ry="15" fill="#D4601A" />
+        {/* Right foot */}
+        <ellipse cx="136" cy="247" rx="16" ry="9" fill="#A84810" />
+        <ellipse cx="136" cy="246" rx="13" ry="7" fill="#D4601A" />
       </svg>
     </div>
   );

@@ -30,7 +30,7 @@ html, body, #root { height: 100%; width: 100%; }
 .rtl { direction: rtl; }
 .ltr { direction: ltr; }
 
-/* ===== CLOUDS ===== */
+/* ===== CLOUDS (start screen) ===== */
 .cloud {
   position: absolute;
   background: white;
@@ -196,6 +196,7 @@ html, body, #root { height: 100%; width: 100%; }
   border-bottom: 2px solid rgba(255,255,255,0.4);
   z-index: 10;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .header-info {
@@ -235,7 +236,7 @@ html, body, #root { height: 100%; width: 100%; }
   white-space: nowrap;
 }
 
-/* ===== GAME MAIN ===== */
+/* ===== GAME MAIN (legacy, kept for compatibility) ===== */
 .game-main {
   flex: 1;
   display: flex;
@@ -246,7 +247,7 @@ html, body, #root { height: 100%; width: 100%; }
   gap: 12px;
 }
 
-/* ===== CHARACTER AREA ===== */
+/* ===== CHARACTER AREA (legacy) ===== */
 .character-area {
   display: flex;
   flex-direction: column;
@@ -255,7 +256,7 @@ html, body, #root { height: 100%; width: 100%; }
   position: relative;
 }
 
-/* Speech bubble */
+/* Speech bubble (legacy start/levelup screens) */
 .speech-bubble {
   position: relative;
   background: white;
@@ -284,8 +285,8 @@ html, body, #root { height: 100%; width: 100%; }
 .problem-display {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  gap: 8px;
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
   font-weight: 900;
   color: #1A0A00;
 }
@@ -295,9 +296,9 @@ html, body, #root { height: 100%; width: 100%; }
   color: var(--green-btn);
   background: #E8F5E9;
   border-radius: 10px;
-  padding: 2px 14px;
+  padding: 2px 12px;
   border: 3px dashed var(--green-btn);
-  min-width: 60px;
+  min-width: 50px;
   text-align: center;
 }
 
@@ -309,14 +310,14 @@ html, body, #root { height: 100%; width: 100%; }
 
 /* Particle walnut */
 .particle {
-  position: absolute;
-  top: 20%;
+  position: fixed;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 2rem;
   animation: fly-walnut 0.9s ease-out forwards;
   pointer-events: none;
-  z-index: 20;
+  z-index: 200;
 }
 
 @keyframes fly-walnut {
@@ -326,10 +327,10 @@ html, body, #root { height: 100%; width: 100%; }
 
 /* Feedback message */
 .feedback-msg {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 800;
   border-radius: 16px;
-  padding: 10px 24px;
+  padding: 8px 20px;
   text-align: center;
   animation: pop-in 0.25s ease-out;
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
@@ -354,6 +355,7 @@ html, body, #root { height: 100%; width: 100%; }
 .squirrel-happy .squirrel-svg { animation: happy-jump 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .squirrel-wrong .squirrel-svg { animation: wrong-shake 0.5s ease-in-out; }
 .squirrel-celebrating .squirrel-svg { animation: celebrate 0.8s ease-in-out infinite; }
+.squirrel-walking .squirrel-svg { animation: walk-bounce 0.6s ease-in-out infinite; }
 
 @keyframes idle-float {
   0%, 100% { transform: translateY(0); }
@@ -377,6 +379,10 @@ html, body, #root { height: 100%; width: 100%; }
   25%       { transform: translateY(-20px) rotate(-8deg)  scale(1.05); }
   75%       { transform: translateY(-20px) rotate(8deg)   scale(1.05); }
 }
+@keyframes walk-bounce {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%       { transform: translateY(-6px) rotate(2deg); }
+}
 
 /* ===== ANSWER FORM ===== */
 .answer-form {
@@ -392,18 +398,17 @@ html, body, #root { height: 100%; width: 100%; }
 .answer-input {
   border: 4px solid #AED6F1;
   border-radius: 20px;
-  padding: 14px 20px;
+  padding: 12px 18px;
   font-family: inherit;
-  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
   font-weight: 800;
   text-align: center;
   color: #1A0A00;
   background: white;
-  width: 150px;
+  width: 140px;
   outline: none;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: border-color 0.2s, box-shadow 0.2s;
-  /* hide number spinners */
   -moz-appearance: textfield;
 }
 .answer-input::-webkit-inner-spin-button,
@@ -418,9 +423,9 @@ html, body, #root { height: 100%; width: 100%; }
   color: white;
   border: none;
   border-radius: 20px;
-  padding: 14px 28px;
+  padding: 12px 26px;
   font-family: inherit;
-  font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+  font-size: clamp(1rem, 3vw, 1.3rem);
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 5px 0 #E65100, 0 6px 16px rgba(0,0,0,0.2);
@@ -435,11 +440,11 @@ html, body, #root { height: 100%; width: 100%; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: rgba(255,255,255,0.55);
   backdrop-filter: blur(6px);
   border-radius: 20px;
-  padding: 14px 24px;
+  padding: 10px 20px;
   width: 100%;
   max-width: 460px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
@@ -451,7 +456,7 @@ html, body, #root { height: 100%; width: 100%; }
   justify-content: center;
 }
 .walnut-dot {
-  font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .walnut-dot.filled { animation: walnut-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -464,7 +469,439 @@ html, body, #root { height: 100%; width: 100%; }
 .progress-label {
   font-weight: 700;
   color: #3D1A00;
+  font-size: 0.95rem;
+}
+
+/* ===== CONTROLS AREA ===== */
+.controls-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px 16px;
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(8px);
+}
+
+/* ===== COUNT BUTTON ===== */
+.count-btn {
+  background: linear-gradient(135deg, #FF8F00, #F57C00);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 24px;
+  font-family: inherit;
   font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #E65100;
+  transition: transform 0.1s;
+}
+.count-btn:hover { transform: translateY(-2px); }
+.count-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #E65100; }
+.count-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ===== FOREST SCENE ===== */
+.forest-scene {
+  position: relative;
+  width: 100%;
+  height: 55vh;
+  min-height: 300px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #87CEEB 0%, #B0E0FF 40%, #C8E6C9 70%, #66BB6A 85%, #4CAF50 100%);
+  flex-shrink: 0;
+}
+
+/* Forest clouds */
+.forest-cloud {
+  position: absolute;
+  background: white;
+  border-radius: 50px;
+  opacity: 0.85;
+  z-index: 1;
+  height: 30px;
+  animation: drift linear infinite;
+}
+.forest-cloud::before,
+.forest-cloud::after {
+  content: '';
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+.forest-cloud-0::before { width: 55px; height: 50px; top: -22px; left: 14px; }
+.forest-cloud-0::after  { width: 42px; height: 42px; top: -16px; left: 48px; }
+.forest-cloud-1::before { width: 40px; height: 38px; top: -18px; left: 10px; }
+.forest-cloud-1::after  { width: 32px; height: 32px; top: -13px; left: 36px; }
+.forest-cloud-2::before { width: 32px; height: 30px; top: -14px; left: 8px; }
+.forest-cloud-2::after  { width: 26px; height: 26px; top: -10px; left: 28px; }
+
+/* Forest trees - positioned absolutely */
+.forest-tree {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Goal walnut tree */
+.goal-tree {
+  z-index: 3;
+}
+
+.walnut-goal-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.goal-label {
+  font-size: 1.6rem;
+  margin-top: -6px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  animation: float-walnut 3s ease-in-out infinite;
+}
+
+/* Ground strip */
+.forest-ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22%;
+  background: linear-gradient(180deg, #66BB6A 0%, #4CAF50 40%, #388E3C 100%);
+  z-index: 2;
+}
+
+/* Dirt path */
+.forest-path {
+  position: absolute;
+  bottom: 4%;
+  left: 5%;
+  right: 5%;
+  height: 14%;
+  background: linear-gradient(180deg, #D7B896 0%, #C4A882 50%, #B89870 100%);
+  border-radius: 50px;
+  z-index: 3;
+  box-shadow: inset 0 3px 8px rgba(0,0,0,0.15);
+}
+.forest-path::before {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 8%;
+  right: 8%;
+  height: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+}
+
+/* Nutty on path */
+.nutty-on-path {
+  position: absolute;
+  bottom: 10%;
+  transition: left 0.9s cubic-bezier(0.34, 1.2, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.nutty-on-path .squirrel-svg {
+  width: 80px;
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+/* Override idle/walking animation on the path so it uses walk-bounce */
+.nutty-on-path .squirrel-idle .squirrel-svg,
+.nutty-on-path .squirrel-walking .squirrel-svg {
+  animation: walk-bounce 0.6s ease-in-out infinite;
+}
+
+/* Forest speech bubble */
+.forest-speech-bubble {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  padding: 8px 14px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+  white-space: nowrap;
+  margin-bottom: 8px;
+  animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.forest-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: white;
+  border-bottom: 0;
+}
+
+/* Forest feedback bubble */
+.forest-feedback {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 800;
+  border-radius: 10px;
+  padding: 4px 10px;
+  pointer-events: none;
+  animation: pop-in 0.2s ease-out;
+}
+.forest-feedback.feedback-correct {
+  background: #E8F5E9;
+  color: var(--correct);
+  border: 2px solid #A5D6A7;
+}
+.forest-feedback.feedback-wrong {
+  background: #FFEBEE;
+  color: var(--wrong);
+  border: 2px solid #FFCDD2;
+}
+
+/* ===== COUNTING HELPER ===== */
+.counting-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 99;
+  display: flex;
+  align-items: flex-end;
+}
+
+.counting-overlay {
+  position: relative;
+  width: 100%;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
+  padding: 24px 20px 20px;
+  z-index: 100;
+  animation: slide-up 0.3s ease-out;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.counting-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.counting-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #3D1A00;
+}
+
+.counting-close {
+  background: #F5F5F5;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  font-weight: 700;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.counting-close:hover { background: #E0E0E0; }
+
+.counting-body {
+  margin-bottom: 16px;
+}
+
+.count-instruction {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #3D1A00;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* Walnut grid */
+.walnut-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.count-walnut {
+  position: relative;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+  user-select: none;
+  display: inline-block;
+  line-height: 1;
+}
+.count-walnut:hover { transform: scale(1.15); }
+
+.count-walnut.counted {
+  filter: brightness(0.65) saturate(0.4);
+}
+
+.count-walnut.counted::after {
+  content: attr(data-num);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #E65100;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.count-walnut.group-a { filter: hue-rotate(0deg); }
+.count-walnut.group-b { filter: hue-rotate(30deg) brightness(1.1); }
+
+.count-walnut.removed-walnut {
+  filter: grayscale(1) opacity(0.5);
+  font-size: 1.6rem;
+}
+
+.count-walnut.remaining-walnut {
+  animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Group labels for addition */
+.group-labels {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.group-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.group-label-a {
+  background: #FFF3E0;
+  color: #E65100;
+  border: 2px solid #FFCC80;
+}
+.group-label-b {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 2px solid #A5D6A7;
+}
+.group-divider {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--orange);
+}
+
+/* Running count */
+.count-running {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #3D1A00;
+  margin: 8px 0;
+}
+
+/* Answer reveal */
+.count-answer-reveal {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--correct);
+  background: #E8F5E9;
+  border: 3px solid #A5D6A7;
+  border-radius: 16px;
+  padding: 12px 20px;
+  margin: 12px 0 0;
+  animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.count-answer-reveal strong {
+  color: #E65100;
+  font-size: 1.8rem;
+}
+
+/* Multiplication grid */
+.mult-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 12px auto;
+  max-width: 300px;
+}
+
+.mult-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mult-row-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #888;
+  min-width: 24px;
+  text-align: right;
+}
+
+.mult-walnut {
+  cursor: default;
+  font-size: 1.6rem;
+}
+.mult-walnut:hover { transform: scale(1.1); }
+
+.mult-more {
+  font-size: 0.8rem;
+  color: #999;
+  font-weight: 600;
+}
+
+.mult-more-rows {
+  font-size: 0.9rem;
+  color: #888;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+/* Counting footer button */
+.counting-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.counting-gotit-btn {
+  padding: 14px 40px;
+  font-size: 1.2rem;
 }
 
 /* ===== LEVEL UP SCREEN ===== */
@@ -538,14 +975,22 @@ html, body, #root { height: 100%; width: 100%; }
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-height: 640px) {
-  .game-main { gap: 6px; padding: 8px 16px 12px; }
-  .squirrel-svg { width: 120px !important; }
-  .speech-bubble { padding: 10px 18px; }
-  .problem-display { font-size: 1.6rem; }
+@media (max-height: 700px) {
+  .forest-scene { height: 45vh; min-height: 240px; }
+  .controls-area { gap: 8px; padding: 8px 16px 10px; }
+  .nutty-on-path .squirrel-svg { width: 65px; }
+  .forest-speech-bubble { padding: 6px 10px; }
+  .problem-display { font-size: 1.1rem; gap: 5px; }
+}
+
+@media (max-height: 600px) {
+  .forest-scene { height: 38vh; min-height: 200px; }
+  .count-btn { padding: 7px 18px; font-size: 0.9rem; }
+  .walnut-progress { padding: 6px 14px; }
 }
 
 @media (max-width: 360px) {
-  .answer-input { width: 120px; }
+  .answer-input { width: 115px; }
   .walnut-dot { font-size: 1rem; }
+  .nutty-on-path .squirrel-svg { width: 60px; }
 }
