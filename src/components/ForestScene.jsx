@@ -1,59 +1,100 @@
 import Squirrel from './Squirrel';
 
-// Static tree configs (deterministic, no random)
+// ── Seasonal themes (one per group of 3 levels) ──────────────────────────────
+const THEMES = [
+  // Spring  — levels 1-3
+  {
+    sky:      'linear-gradient(180deg, #87CEEB 0%, #B0E0FF 45%, #C8E6C9 75%, #66BB6A 100%)',
+    ground:   '#5CB85C',
+    groundShadow: '#4CAF50',
+    path:     '#C4A882',
+    trunk:    '#5D4037',
+    pine:     ['#2E7D32', '#388E3C', '#4CAF50'],
+    round:    ['#1B5E20', '#2E7D32', '#388E3C'],
+    goalCanopy: ['#1B5E20', '#2E7D32', '#388E3C', '#43A047'],
+    cloudColor: 'white',
+    extras: '🌸',
+    label: 'spring',
+  },
+  // Summer  — levels 4-6
+  {
+    sky:      'linear-gradient(180deg, #29B6F6 0%, #4FC3F7 40%, #B3E5FC 72%, #A5D6A7 100%)',
+    ground:   '#43A047',
+    groundShadow: '#388E3C',
+    path:     '#BCAAA4',
+    trunk:    '#4E342E',
+    pine:     ['#1B5E20', '#256427', '#2E7D32'],
+    round:    ['#1A4F18', '#256427', '#2D7A2A'],
+    goalCanopy: ['#1B5E20', '#256427', '#2E7D32', '#388E3C'],
+    cloudColor: 'rgba(255,255,255,0.9)',
+    extras: '☀️',
+    label: 'summer',
+  },
+  // Autumn  — levels 7-9
+  {
+    sky:      'linear-gradient(180deg, #FF8F00 0%, #FFA726 35%, #FFD54F 65%, #A5D6A7 100%)',
+    ground:   '#8D6E63',
+    groundShadow: '#795548',
+    path:     '#A1887F',
+    trunk:    '#4E342E',
+    pine:     ['#E65100', '#F57C00', '#FF8F00'],
+    round:    ['#BF360C', '#D84315', '#E64A19'],
+    goalCanopy: ['#33691E', '#558B2F', '#689F38', '#8BC34A'],
+    cloudColor: 'rgba(255,255,255,0.7)',
+    extras: '🍂',
+    label: 'autumn',
+  },
+  // Winter  — levels 10-12
+  {
+    sky:      'linear-gradient(180deg, #78909C 0%, #B0BEC5 40%, #ECEFF1 70%, #E3F2FD 100%)',
+    ground:   '#ECEFF1',
+    groundShadow: '#CFD8DC',
+    path:     '#E0E0E0',
+    trunk:    '#37474F',
+    pine:     ['#37474F', '#455A64', '#607D8B'],
+    round:    ['#2C3E50', '#37474F', '#455A64'],
+    goalCanopy: ['#2E7D32', '#33691E', '#388E3C', '#43A047'],
+    cloudColor: 'rgba(255,255,255,0.95)',
+    extras: '❄️',
+    label: 'winter',
+  },
+];
+
+function getTheme(levelIdx) {
+  return THEMES[Math.min(Math.floor(levelIdx / 3), 3)];
+}
+
+// ── Static tree positions ────────────────────────────────────────────────────
 const TREES = [
-  { x: 3,  size: 0.75, type: 'pine',  zIndex: 1 },
-  { x: 16, size: 1.0,  type: 'round', zIndex: 2 },
-  { x: 30, size: 0.85, type: 'pine',  zIndex: 1 },
-  { x: 55, size: 0.7,  type: 'round', zIndex: 2 },
-  { x: 68, size: 0.9,  type: 'pine',  zIndex: 1 },
+  { x: 2,  size: 0.72, type: 'pine'  },
+  { x: 16, size: 1.0,  type: 'round' },
+  { x: 29, size: 0.82, type: 'pine'  },
+  { x: 53, size: 0.68, type: 'round' },
+  { x: 67, size: 0.88, type: 'pine'  },
 ];
 
 const CLOUDS = [
-  { x: 5,  y: 6,  w: 110, speed: 18 },
-  { x: 50, y: 12, w: 80,  speed: 24, delay: 4 },
-  { x: 75, y: 7,  w: 65,  speed: 20, delay: 8 },
+  { x: 5,  y: 5,  w: 110, speed: 18, delay: 0 },
+  { x: 48, y: 11, w: 80,  speed: 24, delay: 4 },
+  { x: 74, y: 6,  w: 65,  speed: 20, delay: 8 },
 ];
 
-function PineTree({ size = 1 }) {
+// ── Tree components ──────────────────────────────────────────────────────────
+function PineTree({ size = 1, colors }) {
   const h = 110 * size;
   const w = 55 * size;
+  const cx = (w + 20) / 2;
   return (
-    <svg
-      width={w + 20}
-      height={h + 20}
-      viewBox={`0 0 ${w + 20} ${h + 20}`}
-      style={{ display: 'block' }}
-    >
-      {/* Trunk */}
-      <rect
-        x={(w + 20) / 2 - 7 * size}
-        y={h - 10}
-        width={14 * size}
-        height={30 * size}
-        rx={3}
-        fill="#5D4037"
-      />
-      {/* Bottom triangle */}
-      <polygon
-        points={`${(w + 20) / 2},${8 * size} ${2},${h + 10} ${w + 18},${h + 10}`}
-        fill="#2E7D32"
-      />
-      {/* Mid triangle */}
-      <polygon
-        points={`${(w + 20) / 2},${2} ${6},${h * 0.68} ${w + 14},${h * 0.68}`}
-        fill="#388E3C"
-      />
-      {/* Top triangle */}
-      <polygon
-        points={`${(w + 20) / 2},${2} ${10},${h * 0.45} ${w + 10},${h * 0.45}`}
-        fill="#43A047"
-      />
+    <svg width={w + 20} height={h + 20} viewBox={`0 0 ${w + 20} ${h + 20}`} style={{ display: 'block' }}>
+      <rect x={cx - 7 * size} y={h - 10} width={14 * size} height={30 * size} rx={3} fill="#5D4037" />
+      <polygon points={`${cx},${8 * size} 2,${h + 10} ${w + 18},${h + 10}`}        fill={colors[0]} />
+      <polygon points={`${cx},2 6,${h * 0.68} ${w + 14},${h * 0.68}`}             fill={colors[1]} />
+      <polygon points={`${cx},2 10,${h * 0.45} ${w + 10},${h * 0.45}`}            fill={colors[2]} />
     </svg>
   );
 }
 
-function RoundTree({ size = 1 }) {
+function RoundTree({ size = 1, colors, trunkColor }) {
   const r = 38 * size;
   const trunkW = 14 * size;
   const trunkH = 28 * size;
@@ -61,49 +102,29 @@ function RoundTree({ size = 1 }) {
   const totalH = r * 2 + trunkH + 10;
   const cx = totalW / 2;
   return (
-    <svg
-      width={totalW}
-      height={totalH}
-      viewBox={`0 0 ${totalW} ${totalH}`}
-      style={{ display: 'block' }}
-    >
-      {/* Trunk */}
-      <rect
-        x={cx - trunkW / 2}
-        y={r * 2 - 6}
-        width={trunkW}
-        height={trunkH}
-        rx={4}
-        fill="#5D4037"
-      />
-      {/* Shadow circle */}
-      <circle cx={cx} cy={r + 4} r={r} fill="#1B5E20" />
-      {/* Main canopy */}
-      <circle cx={cx} cy={r} r={r} fill="#2E7D32" />
-      {/* Highlight cluster */}
-      <circle cx={cx - r * 0.3} cy={r - r * 0.3} r={r * 0.55} fill="#388E3C" />
-      <circle cx={cx + r * 0.25} cy={r - r * 0.4} r={r * 0.4} fill="#43A047" />
+    <svg width={totalW} height={totalH} viewBox={`0 0 ${totalW} ${totalH}`} style={{ display: 'block' }}>
+      <rect x={cx - trunkW / 2} y={r * 2 - 6} width={trunkW} height={trunkH} rx={4} fill={trunkColor} />
+      <circle cx={cx} cy={r + 4} r={r}           fill={colors[0]} />
+      <circle cx={cx} cy={r}     r={r}           fill={colors[1]} />
+      <circle cx={cx - r * 0.3}  cy={r - r * 0.3} r={r * 0.55}  fill={colors[1]} />
+      <circle cx={cx + r * 0.25} cy={r - r * 0.4} r={r * 0.4}   fill={colors[2]} />
     </svg>
   );
 }
 
-function WalnutTree() {
-  // Big goal tree at far right
+function WalnutTree({ colors, trunkColor }) {
+  const [c0, c1, c2, c3] = colors;
   return (
     <div className="walnut-goal-tree">
       <svg width="130" height="180" viewBox="0 0 130 180" style={{ display: 'block' }}>
-        {/* Trunk */}
-        <rect x="52" y="100" width="26" height="75" rx="6" fill="#4E342E" />
+        <rect x="52" y="100" width="26" height="75" rx="6" fill={trunkColor} />
         <rect x="57" y="100" width="10" height="75" rx="4" fill="#6D4C41" opacity="0.5" />
-        {/* Shadow */}
-        <ellipse cx="65" cy="115" rx="42" ry="10" fill="#1B5E20" opacity="0.4" />
-        {/* Canopy layers */}
-        <circle cx="65" cy="75" r="52" fill="#1B5E20" />
-        <circle cx="65" cy="65" r="48" fill="#2E7D32" />
-        <circle cx="42" cy="60" r="32" fill="#388E3C" />
-        <circle cx="88" cy="58" r="30" fill="#388E3C" />
-        <circle cx="65" cy="48" r="30" fill="#43A047" />
-        {/* Walnuts hanging */}
+        <ellipse cx="65" cy="115" rx="42" ry="10" fill={c0} opacity="0.4" />
+        <circle cx="65" cy="75" r="52" fill={c0} />
+        <circle cx="65" cy="65" r="48" fill={c1} />
+        <circle cx="42" cy="60" r="32" fill={c2} />
+        <circle cx="88" cy="58" r="30" fill={c2} />
+        <circle cx="65" cy="48" r="30" fill={c3} />
         <text x="38" y="85" fontSize="18">🌰</text>
         <text x="70" y="90" fontSize="16">🌰</text>
         <text x="55" y="72" fontSize="14">🌰</text>
@@ -114,22 +135,56 @@ function WalnutTree() {
   );
 }
 
+// ── Seasonal extras (leaves, snowflakes, flowers) ────────────────────────────
+function SeasonExtras({ theme }) {
+  if (theme.label === 'autumn') {
+    return (
+      <>
+        {['🍂', '🍁', '🍂', '🍁', '🍂'].map((leaf, i) => (
+          <span key={i} className={`season-extra leaf-${i}`}>{leaf}</span>
+        ))}
+      </>
+    );
+  }
+  if (theme.label === 'winter') {
+    return (
+      <>
+        {['❄️', '❄️', '❄️', '❄️', '❄️', '❄️'].map((flake, i) => (
+          <span key={i} className={`season-extra flake-${i}`}>{flake}</span>
+        ))}
+      </>
+    );
+  }
+  if (theme.label === 'spring') {
+    return (
+      <>
+        {['🌸', '🌼', '🌸'].map((flower, i) => (
+          <span key={i} className={`season-extra flower-${i}`}>{flower}</span>
+        ))}
+      </>
+    );
+  }
+  // Summer: sun
+  return <span className="season-extra sun">☀️</span>;
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
 export default function ForestScene({
+  levelIdx = 0,
   progress = 0,
   squirrelState = 'idle',
   problem,
   feedback,
-  lang,
 }) {
+  const theme = getTheme(levelIdx);
   const leftPercent = 8 + progress * 72;
 
-  const opDisplay = problem
-    ? problem.op === '*' ? '×' : problem.op
-    : '?';
-
   return (
-    <div className="forest-scene">
-      {/* Sky clouds */}
+    <div className="forest-scene" style={{ background: theme.sky }}>
+      {/* Seasonal extras */}
+      <SeasonExtras theme={theme} />
+
+      {/* Clouds */}
       {CLOUDS.map((c, i) => (
         <div
           key={i}
@@ -137,9 +192,10 @@ export default function ForestScene({
           style={{
             left: `${c.x}%`,
             top: `${c.y}%`,
-            width: `${c.w}px`,
+            width: c.w,
             animationDuration: `${c.speed}s`,
-            animationDelay: `${c.delay || 0}s`,
+            animationDelay: `${c.delay}s`,
+            background: theme.cloudColor,
           }}
         />
       ))}
@@ -152,44 +208,35 @@ export default function ForestScene({
           style={{
             left: `${tree.x}%`,
             bottom: '22%',
-            zIndex: tree.zIndex,
             transform: `scale(${tree.size})`,
             transformOrigin: 'bottom left',
           }}
         >
-          {tree.type === 'pine' ? (
-            <PineTree size={1} />
-          ) : (
-            <RoundTree size={1} />
-          )}
+          {tree.type === 'pine'
+            ? <PineTree size={1} colors={theme.pine} />
+            : <RoundTree size={1} colors={theme.round} trunkColor={theme.trunk} />}
         </div>
       ))}
 
-      {/* Goal walnut tree at far right */}
-      <div
-        className="forest-tree goal-tree"
-        style={{ right: '2%', bottom: '20%', zIndex: 3 }}
-      >
-        <WalnutTree />
+      {/* Goal walnut tree */}
+      <div className="forest-tree goal-tree" style={{ right: '2%', bottom: '20%', zIndex: 3 }}>
+        <WalnutTree colors={theme.goalCanopy} trunkColor={theme.trunk} />
       </div>
 
-      {/* Ground strip */}
-      <div className="forest-ground" />
+      {/* Ground */}
+      <div className="forest-ground" style={{ background: theme.ground }} />
+      <div className="forest-path"   style={{ background: theme.path  }} />
 
-      {/* Dirt path */}
-      <div className="forest-path" />
-
-      {/* Nutty on path */}
+      {/* Nutty walking on path */}
       <div
         className={`nutty-on-path squirrel-${squirrelState}`}
         style={{ left: `${leftPercent}%` }}
       >
-        {/* Speech bubble showing the problem */}
         {problem && (
           <div className="forest-speech-bubble" style={{ position: 'relative' }}>
             <div className="problem-display">
               <span className="prob-num">{problem.a}</span>
-              <span className="prob-op">{opDisplay}</span>
+              <span className="prob-op">{problem.op === '*' ? '×' : problem.op}</span>
               <span className="prob-num">{problem.b}</span>
               <span className="prob-eq">=</span>
               <span className="prob-blank">?</span>
@@ -197,14 +244,12 @@ export default function ForestScene({
           </div>
         )}
 
-        {/* Feedback bubble if any */}
         {feedback && (
           <div className={`forest-feedback feedback-${feedback.type}`}>
             {feedback.msg}
           </div>
         )}
 
-        {/* The squirrel character */}
         <Squirrel state={squirrelState} />
       </div>
     </div>

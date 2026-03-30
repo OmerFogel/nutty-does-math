@@ -1,7 +1,7 @@
 import Squirrel from '../components/Squirrel';
 import { t } from '../i18n';
 
-export default function StartScreen({ lang, onPlay, onToggleLang }) {
+export default function StartScreen({ lang, onPlay, onChooseLevel, onToggleLang }) {
   const isRTL = lang === 'he';
   return (
     <div className="start-screen">
@@ -21,6 +21,10 @@ export default function StartScreen({ lang, onPlay, onToggleLang }) {
           {t(lang, 'play')}
         </button>
 
+        <button className="choose-level-btn" onClick={onChooseLevel}>
+          {isRTL ? '🗺️ בחר שלב' : '🗺️ Choose Level'}
+        </button>
+
         <div className="level-preview">
           <div className="preview-badge">+ − ×</div>
           <div className="preview-text">
@@ -29,7 +33,6 @@ export default function StartScreen({ lang, onPlay, onToggleLang }) {
         </div>
       </div>
 
-      {/* Decorative walnuts */}
       <div className="deco-walnuts">
         {['🌰', '🌰', '🌰', '🌰', '🌰'].map((w, i) => (
           <span key={i} className={`deco-walnut deco-walnut-${i}`}>{w}</span>

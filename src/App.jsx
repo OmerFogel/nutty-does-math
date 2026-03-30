@@ -4,12 +4,13 @@ import { LEVELS, WALNUTS_PER_LEVEL, generateProblem } from './gameLogic';
 import StartScreen from './screens/StartScreen';
 import GameScreen from './screens/GameScreen';
 import LevelUpScreen from './screens/LevelUpScreen';
+import LevelSelectScreen from './screens/LevelSelectScreen';
 
 const TOTAL_LEVELS = LEVELS.length;
 
 export default function App() {
   const [lang, setLang] = useState('en');
-  const [screen, setScreen] = useState('start');   // start | game | levelUp
+  const [screen, setScreen] = useState('start'); // start | levelSelect | game | levelUp
   const [levelIdx, setLevelIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [walnutsThisLevel, setWalnutsThisLevel] = useState(0);
@@ -48,19 +49,16 @@ export default function App() {
 
     if (correct) {
       const newWalnuts = walnutsThisLevel + 1;
-      const points = 10 + levelIdx * 5;
-      setScore(s => s + points);
+      setScore(s => s + 10 + levelIdx * 5);
       setWalnutsThisLevel(newWalnuts);
       setSquirrelState('happy');
       setFeedback({ type: 'correct', msg: randomMsg(lang, 'correct') });
 
-      // Spawn walnut particle
       const id = particleId.current++;
       setParticles(p => [...p, { id }]);
       setTimeout(() => setParticles(p => p.filter(x => x.id !== id)), 900);
 
       if (newWalnuts >= WALNUTS_PER_LEVEL) {
-        // Level complete
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
           setSquirrelState('celebrating');
@@ -79,10 +77,15 @@ export default function App() {
   const handleNextLevel = () => {
     const next = levelIdx + 1;
     if (next >= TOTAL_LEVELS) {
-      startGame(0); // victory → restart
+      startGame(0);
     } else {
       startGame(next);
     }
+  };
+
+  const handleSkipLevel = () => {
+    const next = levelIdx + 1;
+    if (next < TOTAL_LEVELS) startGame(next);
   };
 
   const toggleLang = () => setLang(l => (l === 'en' ? 'he' : 'en'));
@@ -91,15 +94,28 @@ export default function App() {
   return (
     <div className={`app-root ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {screen === 'start' && (
-        <StartScreen lang={lang} onPlay={() => startGame(0)} onToggleLang={toggleLang} />
+        <StartScreen
+          lang={lang}
+          onPlay={() => startGame(0)}
+          onChooseLevel={() => setScreen('levelSelect')}
+          onToggleLang={toggleLang}
+        />
+      )}
+
+      {screen === 'levelSelect' && (
+        <LevelSelectScreen
+          lang={lang}
+          onSelect={idx => startGame(idx)}
+          onBack={() => setScreen('start')}
+        />
       )}
 
       {screen === 'game' && (
         <GameScreen
           lang={lang}
           level={levelIdx + 1}
+          levelIdx={levelIdx}
           levelName={t(lang, 'levelNames', levelIdx)}
-          levelIntro={t(lang, 'levelIntro', levelIdx)}
           score={score}
           walnutsThisLevel={walnutsThisLevel}
           walnutsNeeded={WALNUTS_PER_LEVEL}
@@ -109,6 +125,7 @@ export default function App() {
           particles={particles}
           onAnswer={handleAnswer}
           onToggleLang={toggleLang}
+          onSkipLevel={levelIdx < TOTAL_LEVELS - 1 ? handleSkipLevel : null}
         />
       )}
 

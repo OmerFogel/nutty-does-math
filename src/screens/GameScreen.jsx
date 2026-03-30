@@ -4,10 +4,10 @@ import ForestScene from '../components/ForestScene';
 import CountingHelper from '../components/CountingHelper';
 
 export default function GameScreen({
-  lang, level, levelName, score,
+  lang, level, levelIdx, levelName, score,
   walnutsThisLevel, walnutsNeeded,
   problem, squirrelState, feedback, particles,
-  onAnswer, onToggleLang,
+  onAnswer, onToggleLang, onSkipLevel,
 }) {
   const [input, setInput] = useState('');
   const [showCounting, setShowCounting] = useState(false);
@@ -66,19 +66,25 @@ export default function GameScreen({
           <span className="level-name-small">{levelName}</span>
         </div>
         <div className="header-score">⭐ {score}</div>
-        <button className="lang-btn" onClick={onToggleLang}>
-          {lang === 'en' ? 'עברית' : 'English'}
-        </button>
+        <div className="header-actions">
+          {onSkipLevel && (
+            <button className="skip-btn" onClick={onSkipLevel} title={lang === 'he' ? 'דלג על שלב' : 'Skip level'}>
+              {lang === 'he' ? '⏭ דלג' : '⏭ Skip'}
+            </button>
+          )}
+          <button className="lang-btn" onClick={onToggleLang}>
+            {lang === 'en' ? 'עברית' : 'English'}
+          </button>
+        </div>
       </header>
 
       {/* Forest Scene — Nutty walks here */}
       <ForestScene
+        levelIdx={levelIdx}
         progress={progress}
-        walnutsNeeded={walnutsNeeded}
         squirrelState={squirrelState}
         problem={problem}
         feedback={feedback}
-        particles={particles}
         lang={lang}
       />
 
