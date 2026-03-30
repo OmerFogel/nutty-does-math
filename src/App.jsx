@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { t, randomMsg } from './i18n';
-import { LEVELS, WALNUTS_PER_LEVEL, generateProblem } from './gameLogic';
+import { LEVELS, WALNUTS_PER_LEVEL, generateProblem, resetHistory } from './gameLogic';
 import StartScreen from './screens/StartScreen';
 import GameScreen from './screens/GameScreen';
 import LevelUpScreen from './screens/LevelUpScreen';
@@ -33,6 +33,7 @@ export default function App() {
 
   const startGame = (fromLevel = 0) => {
     clearTimeout(timer.current);
+    resetHistory();
     setLevelIdx(fromLevel);
     setScore(fromLevel === 0 ? 0 : score);
     setWalnutsThisLevel(0);
@@ -56,21 +57,21 @@ export default function App() {
 
       const id = particleId.current++;
       setParticles(p => [...p, { id }]);
-      setTimeout(() => setParticles(p => p.filter(x => x.id !== id)), 900);
+      setTimeout(() => setParticles(p => p.filter(x => x.id !== id)), 1800);
 
       if (newWalnuts >= WALNUTS_PER_LEVEL) {
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
           setSquirrelState('celebrating');
           setTimeout(() => setScreen('levelUp'), 800);
-        }, 700);
+        }, 1500);
       } else {
-        scheduleReset(900, generateProblem(levelIdx));
+        scheduleReset(1800, generateProblem(levelIdx));
       }
     } else {
       setSquirrelState('wrong');
       setFeedback({ type: 'wrong', msg: randomMsg(lang, 'wrong') });
-      scheduleReset(900, null);
+      scheduleReset(1200, null);
     }
   };
 

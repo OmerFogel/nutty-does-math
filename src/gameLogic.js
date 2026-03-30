@@ -29,7 +29,11 @@ export const LEVELS = [
 
 const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-export function generateProblem(levelIdx) {
+function problemKey(p) {
+  return `${p.a}${p.op}${p.b}`;
+}
+
+function makeProblem(levelIdx) {
   const level = LEVELS[levelIdx];
   const op = level.ops[Math.floor(Math.random() * level.ops.length)];
 
@@ -61,4 +65,27 @@ export function generateProblem(levelIdx) {
   const a = rand(2, mulMax);
   const b = rand(2, level.maxB);
   return { a, b, op, answer: a * b };
+}
+
+// Keep the last N problems to avoid immediate repetition
+const HISTORY_SIZE = 5;
+const recentKeys = [];
+
+export function generateProblem(levelIdx) {
+  let problem;
+  let attempts = 0;
+  do {
+    problem = makeProblem(levelIdx);
+    attempts++;
+    // Give up avoiding repeats after 20 tries (small levels may have few unique combos)
+  } while (recentKeys.includes(problemKey(problem)) && attempts < 20);
+
+  recentKeys.push(problemKey(problem));
+  if (recentKeys.length > HISTORY_SIZE) recentKeys.shift();
+
+  return problem;
+}
+
+export function resetHistory() {
+  recentKeys.length = 0;
 }
