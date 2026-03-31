@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { t, randomMsg } from './i18n';
 import { LEVELS, WALNUTS_PER_LEVEL, generateProblem, resetHistory } from './gameLogic';
+import { initAudio, sfxCorrect, sfxWrong, sfxWalnut, sfxLevelUp, isMuted, setMuted } from './audio';
 import StartScreen from './screens/StartScreen';
 import GameScreen from './screens/GameScreen';
 import LevelUpScreen from './screens/LevelUpScreen';
@@ -19,8 +20,15 @@ export default function App() {
   const [feedback, setFeedback] = useState(null);
   const [particles, setParticles] = useState([]);
 
+  const [muted, setMutedState] = useState(false);
   const timer = useRef(null);
   const particleId = useRef(0);
+
+  const toggleMute = () => {
+    const next = !muted;
+    setMutedState(next);
+    setMuted(next);
+  };
 
   const scheduleReset = (delay, nextProblem) => {
     clearTimeout(timer.current);
@@ -32,6 +40,7 @@ export default function App() {
   };
 
   const startGame = (fromLevel = 0) => {
+    initAudio();
     clearTimeout(timer.current);
     resetHistory();
     setLevelIdx(fromLevel);
@@ -54,15 +63,20 @@ export default function App() {
       setWalnutsThisLevel(newWalnuts);
       setSquirrelState('happy');
       setFeedback({ type: 'correct', msg: randomMsg(lang, 'correct') });
+      sfxCorrect();
 
       const id = particleId.current++;
       setParticles(p => [...p, { id }]);
-      setTimeout(() => setParticles(p => p.filter(x => x.id !== id)), 1800);
+      setTimeout(() => {
+        sfxWalnut();
+        setParticles(p => p.filter(x => x.id !== id));
+      }, 400);
 
       if (newWalnuts >= WALNUTS_PER_LEVEL) {
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
           setSquirrelState('celebrating');
+          sfxLevelUp();
           setTimeout(() => setScreen('levelUp'), 800);
         }, 1500);
       } else {
@@ -71,6 +85,7 @@ export default function App() {
     } else {
       setSquirrelState('wrong');
       setFeedback({ type: 'wrong', msg: randomMsg(lang, 'wrong') });
+      sfxWrong();
       scheduleReset(1200, null);
     }
   };
@@ -94,11 +109,21 @@ export default function App() {
 
   return (
     <div className={`app-root ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Floating mute button — visible on all screens */}
+      <button
+        className="mute-btn"
+        onClick={toggleMute}
+        title={muted ? 'Unmute' : 'Mute'}
+        aria-label={muted ? 'Unmute' : 'Mute'}
+      >
+        {muted ? '🔇' : '🔊'}
+      </button>
+
       {screen === 'start' && (
         <StartScreen
           lang={lang}
           onPlay={() => startGame(0)}
-          onChooseLevel={() => setScreen('levelSelect')}
+          onChooseLevel={() => { initAudio(); setScreen('levelSelect'); }}
           onToggleLang={toggleLang}
         />
       )}

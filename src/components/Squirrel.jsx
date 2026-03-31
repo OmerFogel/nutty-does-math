@@ -1,16 +1,41 @@
-/**
- * Nutty the squirrel — PNG image with CSS squash-&-stretch physics
- * and animated overlays per state.
- */
+import { useState, useEffect, useRef } from 'react';
+
+// Frame sequences per state (fps = frames per second)
+const SEQUENCES = {
+  idle:        { frames: ['idle-0', 'idle-1'],                           fps: 2   },
+  walking:     { frames: ['walk-0', 'walk-1', 'walk-2', 'walk-1'],      fps: 6   },
+  happy:       { frames: ['happy-0', 'happy-1'],                         fps: 4   },
+  wrong:       { frames: ['wrong-0', 'wrong-1'],                         fps: 3   },
+  celebrating: { frames: ['celebrate-0', 'celebrate-1', 'celebrate-2'],  fps: 5   },
+};
+
 export default function Squirrel({ state = 'idle' }) {
-  const isHappy      = state === 'happy';
+  const seq = SEQUENCES[state] ?? SEQUENCES.idle;
+  const [frameIdx, setFrameIdx] = useState(0);
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    setFrameIdx(0);
+    clearInterval(intervalRef.current);
+    if (seq.frames.length > 1) {
+      const ms = Math.round(1000 / seq.fps);
+      intervalRef.current = setInterval(
+        () => setFrameIdx(i => (i + 1) % seq.frames.length),
+        ms
+      );
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [state]);
+
+  const src = `/nutty-${seq.frames[frameIdx]}.png`;
+  const isHappy       = state === 'happy';
   const isCelebrating = state === 'celebrating';
-  const isWrong      = state === 'wrong';
+  const isWrong       = state === 'wrong';
 
   return (
     <div className={`squirrel-wrapper squirrel-${state}`}>
       <img
-        src="/nutty.png"
+        src={src}
         alt="Nutty the squirrel"
         className="squirrel-img"
         draggable="false"
