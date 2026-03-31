@@ -67,10 +67,31 @@ function getTheme(levelIdx) {
 // ── Static tree positions ────────────────────────────────────────────────────
 const TREES = [
   { x: 2,  size: 0.72, type: 'pine'  },
+  { x: 6,  size: 0.60, type: 'round' },
+  { x: 10, size: 0.85, type: 'round' },
+  { x: 13, size: 0.65, type: 'pine'  },
   { x: 16, size: 1.0,  type: 'round' },
+  { x: 19, size: 0.62, type: 'pine'  },
+  { x: 22, size: 0.78, type: 'pine'  },
+  { x: 26, size: 0.68, type: 'round' },
   { x: 29, size: 0.82, type: 'pine'  },
+  { x: 32, size: 0.64, type: 'round' },
+  { x: 35, size: 0.70, type: 'round' },
+  { x: 39, size: 0.75, type: 'pine'  },
+  { x: 43, size: 0.90, type: 'pine'  },
+  { x: 47, size: 0.63, type: 'round' },
   { x: 53, size: 0.68, type: 'round' },
+  { x: 57, size: 0.80, type: 'pine'  },
+  { x: 60, size: 0.95, type: 'pine'  },
+  { x: 64, size: 0.66, type: 'round' },
   { x: 67, size: 0.88, type: 'pine'  },
+  { x: 71, size: 0.70, type: 'pine'  },
+  { x: 74, size: 0.76, type: 'round' },
+  { x: 78, size: 0.67, type: 'pine'  },
+  { x: 82, size: 0.84, type: 'pine'  },
+  { x: 86, size: 0.62, type: 'round' },
+  { x: 90, size: 0.73, type: 'round' },
+  { x: 94, size: 0.69, type: 'pine'  },
 ];
 
 const CLOUDS = [
