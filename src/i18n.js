@@ -21,12 +21,16 @@ const translations = {
       'Easy Subtraction', 'Subtraction to 10', 'Subtraction to 20',
       'Mixed Practice', 'Times 2', 'Times 5', 'Times 10',
       'Multiplication', 'Math Master!',
+      'Divide by 2', 'Divide by 5', 'Divide by 10',
+      'Mixed Division', 'Times & Divide', 'Grand Master!',
     ],
     levelIntro: [
       'Add small numbers!', 'Add up to 10!', 'Add up to 20!',
       'Subtract small numbers!', 'Subtract to 10!', 'Subtract to 20!',
       'Mix of + and −!', 'Multiply by 2!', 'Multiply by 5!', 'Multiply by 10!',
       'Multiply anything!', 'Use everything you know!',
+      'Share into 2 equal groups!', 'Share into 5 equal groups!', 'Share into 10 equal groups!',
+      'Divide by any number!', 'Mix of × and ÷!', 'All four operations — you got this!',
     ],
   },
   he: {
@@ -51,12 +55,16 @@ const translations = {
       'חיסור קל', 'חיסור עד 10', 'חיסור עד 20',
       'תרגול מעורב', 'כפל ב־2', 'כפל ב־5', 'כפל ב־10',
       'כפל', '!אלוף החשבון',
+      'חלוקה ב־2', 'חלוקה ב־5', 'חלוקה ב־10',
+      'חלוקה מעורבת', 'כפל וחלוקה', '!גרנד מאסטר',
     ],
     levelIntro: [
       '!חבר מספרים קטנים', '!חבר עד 10', '!חבר עד 20',
       '!חסר מספרים קטנים', '!חסר עד 10', '!חסר עד 20',
       '!תרגול של + ו−', '!כפול ב־2', '!כפול ב־5', '!כפול ב־10',
       '!כפול כל מספר', '!השתמש בכל מה שלמדת',
+      '!חלק לשתי קבוצות שוות', '!חלק לחמש קבוצות שוות', '!חלק לעשר קבוצות שוות',
+      '!חלק בכל מספר', '!תרגול כפל וחלוקה', '!ארבע פעולות — אתה יכול',
     ],
   },
 };

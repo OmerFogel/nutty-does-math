@@ -23,8 +23,20 @@ export const LEVELS = [
   { ops: ['×'], multiplier: 10, minB: 1, maxB: 10 },
   // 11: Mixed multiplication 2–10
   { ops: ['×'], minA: 2, maxA: 10, minB: 2, maxB: 10 },
-  // 12: Master — everything
+  // 12: Master — everything so far
   { ops: ['+', '-', '×'], minA: 1, maxA: 15, minB: 1, maxB: 10, maxSum: 20, masterMul: true },
+  // 13: Divide by 2
+  { ops: ['÷'], divisor: 2, minQ: 1, maxQ: 10 },
+  // 14: Divide by 5
+  { ops: ['÷'], divisor: 5, minQ: 1, maxQ: 10 },
+  // 15: Divide by 10
+  { ops: ['÷'], divisor: 10, minQ: 1, maxQ: 10 },
+  // 16: Mixed division (÷2–÷10)
+  { ops: ['÷'], minDivisor: 2, maxDivisor: 10, minQ: 1, maxQ: 10 },
+  // 17: Mixed multiplication & division
+  { ops: ['×', '÷'], minA: 2, maxA: 10, minB: 2, maxB: 10, minQ: 1, maxQ: 10 },
+  // 18: Grand Master — all four operations
+  { ops: ['+', '-', '×', '÷'], minA: 1, maxA: 15, minB: 1, maxB: 10, maxSum: 20, masterMul: true, minQ: 1, maxQ: 10 },
 ];
 
 const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -53,18 +65,31 @@ function makeProblem(levelIdx) {
   }
 
   // ×
-  if (level.multiplier !== undefined) {
-    const b = rand(level.minB, level.maxB);
-    const flip = Math.random() > 0.5;
-    const [first, second] = flip ? [b, level.multiplier] : [level.multiplier, b];
-    return { a: first, b: second, op, answer: first * second };
+  if (op === '×') {
+    if (level.multiplier !== undefined) {
+      const b = rand(level.minB, level.maxB);
+      const flip = Math.random() > 0.5;
+      const [first, second] = flip ? [b, level.multiplier] : [level.multiplier, b];
+      return { a: first, b: second, op, answer: first * second };
+    }
+    // Free multiplication (levels 11, 17 & master)
+    const mulMax = level.masterMul ? 10 : level.maxA;
+    const a = rand(2, mulMax);
+    const b = rand(2, level.maxB);
+    return { a, b, op, answer: a * b };
   }
 
-  // Free multiplication (levels 11 & master)
-  const mulMax = level.masterMul ? 10 : level.maxA;
-  const a = rand(2, mulMax);
-  const b = rand(2, level.maxB);
-  return { a, b, op, answer: a * b };
+  // ÷
+  if (op === '÷') {
+    if (level.divisor !== undefined) {
+      const q = rand(level.minQ, level.maxQ);
+      return { a: level.divisor * q, b: level.divisor, op, answer: q };
+    }
+    // Free division (levels 16, 17 & master)
+    const b = rand(level.minDivisor ?? 2, level.maxDivisor ?? 10);
+    const q = rand(level.minQ ?? 1, level.maxQ ?? 10);
+    return { a: b * q, b, op, answer: q };
+  }
 }
 
 // Keep the last N problems to avoid immediate repetition

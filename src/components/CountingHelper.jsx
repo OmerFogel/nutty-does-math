@@ -131,6 +131,60 @@ export default function CountingHelper({ problem, lang, onClose }) {
     );
   };
 
+  // ── DIVISION ──
+  // Show b groups, each with `answer` walnuts. User clicks each nut; answer reveals when all clicked.
+  const renderDivision = () => {
+    const groups = b;
+    const perGroup = answer;
+    const total = groups * perGroup;
+    const allClicked = clickedSet.size === total;
+    const clickOrder = {};
+    Array.from(clickedSet).forEach((idx, i) => { clickOrder[idx] = i + 1; });
+
+    return (
+      <div>
+        <p className="count-instruction">
+          {lang === 'he'
+            ? `${a} אגוזים ל־${groups} קבוצות — לחץ על כל אגוז`
+            : `Share ${a} walnuts into ${groups} groups — click each one`}
+        </p>
+        <div className="mult-grid">
+          {Array.from({ length: groups }).map((_, row) => (
+            <div key={row} className="mult-row">
+              <span className="mult-row-label">{row + 1}.</span>
+              {Array.from({ length: perGroup }).map((__, col) => {
+                const idx = row * perGroup + col;
+                return (
+                  <span
+                    key={col}
+                    className={`count-walnut mult-walnut${clickedSet.has(idx) ? ' counted' : ''}`}
+                    data-num={clickOrder[idx] || ''}
+                    onClick={() => handleWalnutClick(idx)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && handleWalnutClick(idx)}
+                  >
+                    🌰
+                  </span>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        <div className="count-running">
+          {lang === 'he' ? `סופרים: ${clickedSet.size}` : `Counted: ${clickedSet.size}`}
+        </div>
+        {allClicked && (
+          <div className="count-answer-reveal">
+            🎉 {a} ÷ {b} = <strong>{answer}</strong>
+            {' '}
+            {lang === 'he' ? 'בכל קבוצה!' : 'in each group!'}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // ── MULTIPLICATION ──
   const renderMultiplication = () => {
     const product = a * b;
@@ -192,6 +246,7 @@ export default function CountingHelper({ problem, lang, onClose }) {
         {op === '+' && renderAddition()}
         {op === '-' && renderSubtraction()}
         {op === '×' && renderMultiplication()}
+        {op === '÷' && renderDivision()}
       </div>
 
       <div className="counting-footer">

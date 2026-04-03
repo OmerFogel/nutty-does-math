@@ -61,7 +61,7 @@ const THEMES = [
 ];
 
 function getTheme(levelIdx) {
-  return THEMES[Math.min(Math.floor(levelIdx / 3), 3)];
+  return THEMES[Math.floor(levelIdx / 3) % THEMES.length];
 }
 
 // ── Static tree positions ────────────────────────────────────────────────────
