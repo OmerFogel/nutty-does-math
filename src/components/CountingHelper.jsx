@@ -19,9 +19,9 @@ export default function CountingHelper({ problem, lang, onClose }) {
 
   const handleWalnutClick = (idx) => {
     setClickedSet(prev => {
+      if (prev.has(idx)) return prev; // one-way: can't unclick
       const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
+      next.add(idx);
       return next;
     });
   };
@@ -134,96 +134,51 @@ export default function CountingHelper({ problem, lang, onClose }) {
   // ── MULTIPLICATION ──
   const renderMultiplication = () => {
     const product = a * b;
-    if (product <= 30) {
-      const allClicked = clickedSet.size === product;
-      return (
-        <div>
-          <p className="count-instruction">
-            {lang === 'he'
-              ? `${a} שורות של ${b} אגוזים — לחץ על כולם לספור`
-              : `${a} rows of ${b} walnuts — click them all to count`}
-          </p>
-          <div className="mult-grid">
-            {Array.from({ length: a }).map((_, row) => (
-              <div key={row} className="mult-row">
-                <span className="mult-row-label">{row + 1}.</span>
-                {Array.from({ length: b }).map((__, col) => {
-                  const idx = row * b + col;
-                  return (
-                    <span
-                      key={col}
-                      className={`count-walnut mult-walnut${clickedSet.has(idx) ? ' counted' : ''}`}
-                      onClick={() => handleWalnutClick(idx)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={e => e.key === 'Enter' && handleWalnutClick(idx)}
-                    >
-                      🌰
-                    </span>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-          <div className="count-running">
-            {lang === 'he' ? `סופרים: ${clickedSet.size}` : `Counted: ${clickedSet.size}`}
-          </div>
-          {allClicked && (
-            <div className="count-answer-reveal">
-              🎉 {a} × {b} = <strong>{product}</strong>!
+    const allClicked = clickedSet.size === product;
+    // Track click order for numbering
+    const clickOrder = {};
+    Array.from(clickedSet).forEach((idx, i) => { clickOrder[idx] = i + 1; });
+
+    return (
+      <div>
+        <p className="count-instruction">
+          {lang === 'he'
+            ? `${a} שורות של ${b} אגוזים — לחץ על כל אגוז לספור`
+            : `${a} rows of ${b} walnuts — click each one to count`}
+        </p>
+        <div className="mult-grid">
+          {Array.from({ length: a }).map((_, row) => (
+            <div key={row} className="mult-row">
+              <span className="mult-row-label">{row + 1}.</span>
+              {Array.from({ length: b }).map((__, col) => {
+                const idx = row * b + col;
+                return (
+                  <span
+                    key={col}
+                    className={`count-walnut mult-walnut${clickedSet.has(idx) ? ' counted' : ''}`}
+                    data-num={clickOrder[idx] || ''}
+                    onClick={() => handleWalnutClick(idx)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && handleWalnutClick(idx)}
+                  >
+                    🌰
+                  </span>
+                );
+              })}
             </div>
-          )}
+          ))}
         </div>
-      );
-    } else {
-      // Large product: show groups, reveal answer when user clicks each group
-      const showGroups = Math.min(a, 5);
-      const showPerGroup = Math.min(b, 5);
-      const allGroupsClicked = clickedSet.size === showGroups;
-      return (
-        <div>
-          <p className="count-instruction">
-            {lang === 'he'
-              ? `לחץ על כל קבוצה כדי לסמן אותה`
-              : `Click each group to count it`}
-          </p>
-          <div className="mult-grid">
-            {Array.from({ length: showGroups }).map((_, row) => (
-              <div
-                key={row}
-                className={`mult-row${clickedSet.has(row) ? ' counted' : ''}`}
-                onClick={() => handleWalnutClick(row)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && handleWalnutClick(row)}
-                style={{ cursor: 'pointer' }}
-              >
-                <span className="mult-row-label">×{row + 1}</span>
-                {Array.from({ length: showPerGroup }).map((__, col) => (
-                  <span key={col} className="count-walnut mult-walnut">🌰</span>
-                ))}
-                {b > 5 && <span className="mult-more">+{b - 5} more</span>}
-              </div>
-            ))}
-            {a > 5 && (
-              <div className="mult-more-rows">
-                {lang === 'he' ? `...ועוד ${a - 5} שורות` : `...and ${a - 5} more rows`}
-              </div>
-            )}
-          </div>
-          <div className="count-running">
-            {lang === 'he'
-              ? `קבוצות שסומנו: ${clickedSet.size} / ${showGroups}`
-              : `Groups counted: ${clickedSet.size} / ${showGroups}`}
-          </div>
-          {allGroupsClicked && (
-            <div className="count-answer-reveal">
-              🎉 {a} × {b} = <strong>{product}</strong>!
-            </div>
-          )}
+        <div className="count-running">
+          {lang === 'he' ? `סופרים: ${clickedSet.size}` : `Counted: ${clickedSet.size}`}
         </div>
-      );
-    }
+        {allClicked && (
+          <div className="count-answer-reveal">
+            🎉 {a} × {b} = <strong>{product}</strong>!
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
