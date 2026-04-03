@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 
 export default function CountingHelper({ problem, lang, onClose }) {
   const [clickedSet, setClickedSet] = useState(new Set());
-  const [removed, setRemoved] = useState(new Set());
-  const [autoRemoved, setAutoRemoved] = useState(false);
+  const [removed, setRemoved]       = useState(new Set());
 
   const title = lang === 'he' ? 'ספור עם אגוז! 🌰' : 'Count with Nutty! 🌰';
   const gotIt = lang === 'he' ? 'הבנתי! ✓' : 'Got it! ✓';
@@ -16,30 +15,13 @@ export default function CountingHelper({ problem, lang, onClose }) {
   useEffect(() => {
     setClickedSet(new Set());
     setRemoved(new Set());
-    setAutoRemoved(false);
   }, [problem]);
-
-  // For subtraction: auto cross-out first b walnuts after 1 second
-  useEffect(() => {
-    if (op === '-' && !autoRemoved) {
-      const timer = setTimeout(() => {
-        const newRemoved = new Set();
-        for (let i = 0; i < b; i++) newRemoved.add(i);
-        setRemoved(newRemoved);
-        setAutoRemoved(true);
-      }, 900);
-      return () => clearTimeout(timer);
-    }
-  }, [op, b, autoRemoved]);
 
   const handleWalnutClick = (idx) => {
     setClickedSet(prev => {
       const next = new Set(prev);
-      if (next.has(idx)) {
-        next.delete(idx);
-      } else {
-        next.add(idx);
-      }
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
       return next;
     });
   };
@@ -48,7 +30,6 @@ export default function CountingHelper({ problem, lang, onClose }) {
   const renderAddition = () => {
     const total = a + b;
     const allClicked = clickedSet.size === total;
-    // Assign count numbers in click order using sorted indices
     const clickedArr = Array.from(clickedSet).sort((x, y) => x - y);
     const countMap = {};
     clickedArr.forEach((idx, i) => { countMap[idx] = i + 1; });
@@ -76,7 +57,6 @@ export default function CountingHelper({ problem, lang, onClose }) {
             </span>
           ))}
         </div>
-        {/* Divider indicator */}
         <div className="group-labels">
           <span className="group-label group-label-a">
             {lang === 'he' ? `קבוצה א׳: ${a}` : `Group A: ${a}`}
@@ -99,36 +79,52 @@ export default function CountingHelper({ problem, lang, onClose }) {
   };
 
   // ── SUBTRACTION ──
+  // User clicks walnuts to remove them; answer reveals when b are removed
   const renderSubtraction = () => {
-    const remaining = a - b;
+    const handleRemoveClick = (i) => {
+      setRemoved(prev => {
+        if (prev.has(i)) return prev; // already removed, ignore
+        if (prev.size >= b) return prev; // already removed enough
+        const next = new Set(prev);
+        next.add(i);
+        return next;
+      });
+    };
+
+    const doneRemoving = removed.size === b;
+
     return (
       <div>
         <p className="count-instruction">
           {lang === 'he'
-            ? `${a} אגוזים, מסירים ${b}. כמה נשארים?`
-            : `${a} walnuts, take away ${b}. How many are left?`}
+            ? `${a} אגוזים, לחץ כדי להסיר ${b}. כמה נשארים?`
+            : `${a} walnuts — click to take away ${b}. How many are left?`}
         </p>
         <div className="walnut-grid">
           {Array.from({ length: a }).map((_, i) => (
             <span
               key={i}
               className={`count-walnut${removed.has(i) ? ' removed-walnut' : ' remaining-walnut'}`}
-              title={removed.has(i) ? 'Removed' : 'Remaining'}
+              onClick={() => handleRemoveClick(i)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={e => e.key === 'Enter' && handleRemoveClick(i)}
+              title={removed.has(i) ? 'Removed' : 'Click to remove'}
             >
               {removed.has(i) ? '❌' : '🌰'}
             </span>
           ))}
         </div>
-        {autoRemoved && (
+        <div className="count-running">
+          {lang === 'he'
+            ? `הוסרו: ${removed.size} / ${b}`
+            : `Removed: ${removed.size} / ${b}`}
+        </div>
+        {doneRemoving && (
           <div className="count-answer-reveal">
-            {a} − {b} = <strong>{remaining}</strong>
+            {a} − {b} = <strong>{a - b}</strong>
             {' '}
             {lang === 'he' ? 'נשארו!' : 'left!'}
-          </div>
-        )}
-        {!autoRemoved && (
-          <div className="count-running">
-            {lang === 'he' ? 'מסירים כמה אגוזים...' : 'Removing walnuts...'}
           </div>
         )}
       </div>
@@ -139,43 +135,69 @@ export default function CountingHelper({ problem, lang, onClose }) {
   const renderMultiplication = () => {
     const product = a * b;
     if (product <= 30) {
-      // Show as grid of rows
+      const allClicked = clickedSet.size === product;
       return (
         <div>
           <p className="count-instruction">
             {lang === 'he'
-              ? `${a} שורות של ${b} אגוזים בכל שורה`
-              : `${a} rows of ${b} walnuts each`}
+              ? `${a} שורות של ${b} אגוזים — לחץ על כולם לספור`
+              : `${a} rows of ${b} walnuts — click them all to count`}
           </p>
           <div className="mult-grid">
             {Array.from({ length: a }).map((_, row) => (
               <div key={row} className="mult-row">
                 <span className="mult-row-label">{row + 1}.</span>
-                {Array.from({ length: b }).map((__, col) => (
-                  <span key={col} className="count-walnut mult-walnut">🌰</span>
-                ))}
+                {Array.from({ length: b }).map((__, col) => {
+                  const idx = row * b + col;
+                  return (
+                    <span
+                      key={col}
+                      className={`count-walnut mult-walnut${clickedSet.has(idx) ? ' counted' : ''}`}
+                      onClick={() => handleWalnutClick(idx)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={e => e.key === 'Enter' && handleWalnutClick(idx)}
+                    >
+                      🌰
+                    </span>
+                  );
+                })}
               </div>
             ))}
           </div>
-          <div className="count-answer-reveal">
-            {a} × {b} = <strong>{product}</strong>
+          <div className="count-running">
+            {lang === 'he' ? `סופרים: ${clickedSet.size}` : `Counted: ${clickedSet.size}`}
           </div>
+          {allClicked && (
+            <div className="count-answer-reveal">
+              🎉 {a} × {b} = <strong>{product}</strong>!
+            </div>
+          )}
         </div>
       );
     } else {
-      // Show as concept with groups (up to 5 groups, up to 5 items)
+      // Large product: show groups, reveal answer when user clicks each group
       const showGroups = Math.min(a, 5);
       const showPerGroup = Math.min(b, 5);
+      const allGroupsClicked = clickedSet.size === showGroups;
       return (
         <div>
           <p className="count-instruction">
             {lang === 'he'
-              ? `${a} קבוצות של ${b} = ${product}`
-              : `${a} groups of ${b} = ${product}`}
+              ? `לחץ על כל קבוצה כדי לסמן אותה`
+              : `Click each group to count it`}
           </p>
           <div className="mult-grid">
             {Array.from({ length: showGroups }).map((_, row) => (
-              <div key={row} className="mult-row">
+              <div
+                key={row}
+                className={`mult-row${clickedSet.has(row) ? ' counted' : ''}`}
+                onClick={() => handleWalnutClick(row)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && handleWalnutClick(row)}
+                style={{ cursor: 'pointer' }}
+              >
                 <span className="mult-row-label">×{row + 1}</span>
                 {Array.from({ length: showPerGroup }).map((__, col) => (
                   <span key={col} className="count-walnut mult-walnut">🌰</span>
@@ -189,9 +211,16 @@ export default function CountingHelper({ problem, lang, onClose }) {
               </div>
             )}
           </div>
-          <div className="count-answer-reveal">
-            {a} × {b} = <strong>{product}</strong>
+          <div className="count-running">
+            {lang === 'he'
+              ? `קבוצות שסומנו: ${clickedSet.size} / ${showGroups}`
+              : `Groups counted: ${clickedSet.size} / ${showGroups}`}
           </div>
+          {allGroupsClicked && (
+            <div className="count-answer-reveal">
+              🎉 {a} × {b} = <strong>{product}</strong>!
+            </div>
+          )}
         </div>
       );
     }
